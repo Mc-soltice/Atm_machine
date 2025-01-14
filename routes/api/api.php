@@ -9,8 +9,8 @@ use App\Http\Controllers\Api\TransactionController;
 
 
 //****************** Route publiques */
-Route::get('/connection', [AuthControler::class, 'login']);
 Route::post('/register', [AuthControler::class, 'register']);
+Route::get('/connexion', [AuthControler::class, 'login'])->middleware(['checklock']);
 
 
 //****************** Routes accessibles aux admins et utilisateurs connectés */
@@ -20,7 +20,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //****************** Route privees client*/
-Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function () {
+Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function () 
+{
 
     Route::post('/transfer/{userId}', [TransactionController::class, 'transferFund']);
     Route::get('/transactions', [TransactionController::class, 'getAllTransactions']);
@@ -30,14 +31,18 @@ Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function (
 
 
 //****************** Route privees Admin*/
-Route::middleware(['auth:sanctum','ability:manage_account,manage_user'])->group(function () {
-    
-    Route::get('/users/{id}', [AuthControler::class, 'findUser']);
-    Route::get('/users', [AuthControler::class, 'getUsers']);
-    Route::delete('/users/{id}', [AuthControler::class, 'deleteUser']);
-    Route::put('/users/{id}', [AuthControler::class, 'UpdateUser']);
-    Route::get('/accounts', [AccountsController::class, 'getAccounts']);
+Route::group(['prefix' => 'admin'], function () 
+{
+    Route::middleware(['auth:sanctum','ability:manage_account,manage_user'])->group(function () 
+    {
+        Route::get('/users', [AuthControler::class, 'getUsers']);
+        Route::get('/users/{id}', [AuthControler::class, 'findUser']);
+        Route::put('/users/{id}', [AuthControler::class, 'UpdateUser']);
+        Route::patch('/user/{id}', [AuthControler::class, 'unlockUser']);
+        Route::delete('/users/{id}', [AuthControler::class, 'deleteUser']);
+        Route::get('/accounts', [AccountsController::class, 'getAccounts']);
 
+    });
 });
 
 Route::middleware(['auth:sanctum'])->get('/debug', function () {

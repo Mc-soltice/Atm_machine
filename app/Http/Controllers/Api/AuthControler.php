@@ -30,7 +30,6 @@ class AuthControler extends Controller
         
     }
 
-
     //*********** Se connecter */
     public function login(LoginAuthRequest $request)
     {
@@ -38,14 +37,14 @@ class AuthControler extends Controller
     }
 
     //*********** Se deconnecter */
-    public function logout(LoginAuthRequest $data)
-{
-    $this->authentificationService->logout($data);
-    return response(['message' => 'Logged out successfully']);
-}
+    public function logout(Request $data)
+    {
+        $this->authentificationService->logout($data);
+        return response(['message' => 'Logged out successfully']);
+    }
 
 
-    
+
     public function getUsers()
     {
         return UserResource::collection($this->userService->getAllUsers());
@@ -60,10 +59,14 @@ class AuthControler extends Controller
     {
         return new UserResource($this->userService->UpdateUser($request, $id));
     }
-
+    
     public function DeleteUser($id)
     {
         return $this->userService->deleteUser($id);
     }
 
+    public function unlockUser($userId)
+    {
+        return $this->userService->unlockUser($userId);
+    }
 }

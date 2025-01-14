@@ -9,6 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
+// use Spatie\Permission\Models\LoginAttempt;
 use Spatie\Permission\Models\Permission;
 
 
@@ -28,7 +29,9 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'role_id'
+        'role_id',
+        'is_locked',
+        'lock_time'
     ];
 
     /**
@@ -54,6 +57,10 @@ class User extends Authenticatable
         ];
     }
     
+    public function loginAttempt()
+    { 
+        return $this->hasOne(LoginAttempt::class); 
+    }
      public function bankAccount()
     {
         return $this->hasOne(BankAccount::class);
@@ -70,4 +77,5 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Permission::class);
     }
+
 }

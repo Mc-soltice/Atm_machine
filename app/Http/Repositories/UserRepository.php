@@ -42,6 +42,18 @@ class UserRepository
         return $user;
     }
 
+    public function unlockUser($user)
+    {
+        if ($user && $user->loginAttempt) 
+        {
+            $user->loginAttempt->update(['locked_until' => null, 'attempts' => 0]);
+
+            Logging::store("Admin {$user->email} unlocked successfully!");
+
+            return response()->json(['message' => 'User unlocked successfully.']);
+        }
+            return response()->json(['message' => 'User not found.'], 404);
+    }
 
     public function delete($id)
     {

@@ -59,14 +59,14 @@ class AuthentificationService
             'password' => $request->password,
         ];
         
-        return $this->authentificationRepository->loginAdminUser($data);   
-        
+        return $this->authentificationRepository->loginUser($data);   
     }
 
     public function logout($data)
     {
+        // $user = user::where('email', $data['email'])->first();
         Logging::store("User {$data['email']} logout succesffully");
-         return $data->user()->currentAccessToken()->delete();
+        return $data->user()->currentAccessToken()->delete();
     }
     
 }   

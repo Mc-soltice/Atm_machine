@@ -5,6 +5,7 @@ namespace App\Http\Service;
 
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\AuthentificationRepository;
+use App\Models\User;
 
 class UserService
 {
@@ -42,6 +43,13 @@ class UserService
 
         return $this->userRepository->UpdateUser($id, $data);
     }
+
+    public function unlockUser($userId)
+    {
+        $user = User::find($userId);
+        return $this->userRepository->unlockUser($user);
+    }
+    
     public function deleteUser($id)
     {
         return $this->userRepository->delete($id);
