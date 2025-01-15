@@ -2,6 +2,7 @@
 namespace App\Http\Service;
 
 use App\Http\Repositories\TransactionRepository;
+use App\Models\Transaction;
 
 class TransactionService
 {
@@ -59,6 +60,15 @@ class TransactionService
         'to_account_balance' => $toBankAccount->balance,
         'amount' => $amount,
     ];
+    }
+
+    public function getUserTransactions($accountNumber)
+    {
+
+        $transactions = Transaction::whereIn('account_number', $accountNumber)
+                               ->orderBy('created_at', 'desc')
+                               ->get();
+        return $transactions;
     }
 
     public function getAllTransactions()

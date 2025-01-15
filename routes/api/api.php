@@ -24,9 +24,9 @@ Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function (
 {
 
     Route::post('/transfer/{userId}', [TransactionController::class, 'transferFund']);
-    Route::get('/transactions', [TransactionController::class, 'getAllTransactions']);
     Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
-
+    Route::get('/transactions', [TransactionController::class, 'getUserTransactions']);
+    
 });
 
 
@@ -41,6 +41,8 @@ Route::group(['prefix' => 'admin'], function ()
         Route::patch('/user/{id}', [AuthControler::class, 'unlockUser']);
         Route::delete('/users/{id}', [AuthControler::class, 'deleteUser']);
         Route::get('/accounts', [AccountsController::class, 'getAccounts']);
+        Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
+        Route::get('/all_transactions', [TransactionController::class, 'getAllTransactions']);
 
     });
 });

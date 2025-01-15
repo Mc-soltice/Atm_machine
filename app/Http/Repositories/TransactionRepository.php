@@ -39,7 +39,9 @@ public function __construct(Transaction $transaction)
         
     }
 
-    public function getAllTransactions(){
+    public function getAllTransactions()
+    {
+
         
         return Transaction::orderBy('created_at', 'desc')->get();
     }

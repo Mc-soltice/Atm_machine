@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Service\TransactionService;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Http\Request;
+
 use App\Http\Resources\TransferResource;
 use App\Models\User;
 use App\Models\BankAccount;
@@ -69,6 +72,21 @@ class TransactionController extends Controller
         
         return response()->json(['status' => $status]);
     }
+
+    public function getUserTransactions(Request $request)
+    {
+        $token = $request->bearerToken();
+        $tokenData = PersonalAccessToken::findToken($token);
+        if ($tokenData) 
+        {
+            $user = $tokenData->tokenable;  // Récupère l'utilisateur lié au token
+            $accountNumber= $user->bankAccount()->pluck('account_number');
+            return $this->transactionService->getUserTransactions($accountNumber);
+        }
+        return response()->json(['error' => 'Token not valid'], 401);
+    }
+
+    
     public function getAllTransactions()
     {
         $transaction= $this->transactionService->getAllTransactions();
