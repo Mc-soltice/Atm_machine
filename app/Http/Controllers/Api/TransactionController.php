@@ -60,16 +60,17 @@ class TransactionController extends Controller
         $accountNumber= $request->user()->bankAccount()->pluck('account_number');
         return $this->transactionService->getUserTransactions($accountNumber);
     }
-
+    
     public function getAccountTranscript(Request $request)
     {
         $accountNumber= $request->user()->bankAccount()->pluck('account_number');
         return $this->transactionService->getAccountTranscript($accountNumber);
     }
-
+    
     public function getAllTransactions()
     {
         $transaction= $this->transactionService->getAllTransactions();
         return TransactionResource::collection($transaction);
     }
+
 }

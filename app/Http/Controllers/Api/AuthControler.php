@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PinRequest;
 use App\Http\Requests\LoginAuthRequest;
 use App\Http\Requests\RegisterAuthRequest;
 use App\Http\Service\AuthentificationService;
@@ -52,6 +53,11 @@ class AuthControler extends Controller
     public function UpdateUser(Request $request, $id)
     {
         return new UserResource($this->userService->UpdateUser($request, $id));
+    }
+
+    public function UpdatePin(PinRequest $request)
+    {   
+        return $this->userService->UpdatePin($request);
     }
     
     public function DeleteUser($id)

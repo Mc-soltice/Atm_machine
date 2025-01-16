@@ -42,6 +42,21 @@ class UserRepository
         return $user;
     }
 
+    public function UpdatePin($userId, $hashedPassword)
+    {   
+        $email = User::where('id', $userId)->first()->email;
+
+        Logging::store("User {$email} updated PIN succesfully");
+        $updated = User::where('id', $userId)->update(['password' => $hashedPassword]);
+
+        if ($updated) {
+            return response()->json(['message' => 'Password updated successfully'], 200);
+        } else {
+            return response()->json(['error' => 'Failed to update password'], 400);
+        }
+
+    }
+
     public function unlockUser($user)
     {
         if ($user && $user->loginAttempt) 

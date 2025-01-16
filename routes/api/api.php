@@ -25,10 +25,11 @@ Route::group(['prefix' => 'user'], function ()
     Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function () 
     {
 
+        Route::post('/update', [AuthControler::class, 'UpdatePin']);
         Route::post('/transfer', [TransactionController::class, 'transferFund']);
-        Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
         Route::get('/transcript', [TransactionController::class, 'getAccountTranscript']);
         Route::get('/transactions', [TransactionController::class, 'getUserTransactions']);
+        Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
         
     });
 });
@@ -41,9 +42,9 @@ Route::group(['prefix' => 'admin'], function ()
     {
         Route::get('/users', [AuthControler::class, 'getUsers']);
         Route::get('/users/{id}', [AuthControler::class, 'findUser']);
-        Route::patch('/users/{id}', [AuthControler::class, 'UpdateUser']);
-        Route::patch('/user/{id}', [AuthControler::class, 'unlockUser']);
-        Route::delete('/users/{id}', [AuthControler::class, 'deleteUser']);
+        Route::patch('/update_user/{id}', [AuthControler::class, 'UpdateUser']);
+        Route::patch('/unlock_user/{id}', [AuthControler::class, 'unlockUser']);
+        Route::delete('/delete_user/{id}', [AuthControler::class, 'deleteUser']);
         Route::get('/accounts', [AccountsController::class, 'getAccounts']);
         Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
         Route::get('/all_transactions', [TransactionController::class, 'getAllTransactions']);
