@@ -20,13 +20,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //****************** Route privees client*/
-Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function () 
+Route::group(['prefix' => 'user'], function () 
 {
+    Route::middleware(['auth:sanctum','ability:make_transaction'])->group(function () 
+    {
 
-    Route::post('/transfer/{userId}', [TransactionController::class, 'transferFund']);
-    Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
-    Route::get('/transactions', [TransactionController::class, 'getUserTransactions']);
-    
+        Route::post('/transfer', [TransactionController::class, 'transferFund']);
+        Route::post('/accounts/{userId}', [TransactionController::class, 'doTransaction']);
+        Route::get('/transcript', [TransactionController::class, 'getAccountTranscript']);
+        Route::get('/transactions', [TransactionController::class, 'getUserTransactions']);
+        
+    });
 });
 
 
@@ -37,7 +41,7 @@ Route::group(['prefix' => 'admin'], function ()
     {
         Route::get('/users', [AuthControler::class, 'getUsers']);
         Route::get('/users/{id}', [AuthControler::class, 'findUser']);
-        Route::put('/users/{id}', [AuthControler::class, 'UpdateUser']);
+        Route::patch('/users/{id}', [AuthControler::class, 'UpdateUser']);
         Route::patch('/user/{id}', [AuthControler::class, 'unlockUser']);
         Route::delete('/users/{id}', [AuthControler::class, 'deleteUser']);
         Route::get('/accounts', [AccountsController::class, 'getAccounts']);

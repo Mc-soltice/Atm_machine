@@ -15,16 +15,14 @@ class TransferResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'from_account' => [
-                'id' => $this->from_account_id,
-                // 'balance' => $this->from_account_balance,
-            ],
-            'to_account' => [
-                'id' => $this->to_account_id,
-                'balance' => $this->to_account_balance,
-            ],
-            'amount' => $this->amount,
+            'from_account' => $this['from_account_number'],
+            'to_account' => $this['to_account_number'],
+            'amount transfered' => number_format($this['amount'], 2),
             'message' => 'Funds transfered successfully',
+            'New balance' => $this['from_account_balance']
         ];
+    
     }
+
 }
+

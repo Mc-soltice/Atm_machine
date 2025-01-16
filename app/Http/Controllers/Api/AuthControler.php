@@ -25,25 +25,19 @@ class AuthControler extends Controller
     
     public function register(RegisterAuthRequest $request)
     {
-        $user = $this->authentificationService->register($request);
-        return $user;
-        
+        return $this->authentificationService->register($request);
     }
 
-    //*********** Se connecter */
     public function login(LoginAuthRequest $request)
     {
         return $this->authentificationService->loginUser($request);
     }
 
-    //*********** Se deconnecter */
     public function logout(Request $data)
     {
         $this->authentificationService->logout($data);
         return response(['message' => 'Logged out successfully']);
     }
-
-
 
     public function getUsers()
     {

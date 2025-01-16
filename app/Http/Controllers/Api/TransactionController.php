@@ -37,60 +37,39 @@ class TransactionController extends Controller
 
     }
     
-    
-    public function transferFund(TransactionRequest $request, $userId)
+    public function transferFund(TransactionRequest $transactionRequest)
     {
-        $data = $request->validated();
+        $user = $transactionRequest->user();  // Utilise directement l'utilisateur authentifié
+        $data = $transactionRequest->validated();
 
-        // Récupérer le compte bancaire de l'utilisateur
-        $fromBankAccount = User::findOrFail($userId)->bankAccount;
-        
-        // Vérifier que le compte bancaire existe
-        if (!$fromBankAccount) {
-            return response()->json(['message' => 'Compte bancaire introuvable.'], 404);
-        }
-        
-        // Récupérer le numéro de compte du destinataire
-        $toBankAccountNumber = $data['to_account_number'];
-
-        // Récupérer le numéro de compte de l'expéditeur
-        $fromBankAccountNumber = $fromBankAccount->account_number;
-        
-        // Récupérer le compte bancaire destinataire
+        $fromBankAccount = $user->bankAccount()->first();  // Récupère le premier compte de l'utilisateur
         $toBankAccount = BankAccount::where('account_number', $data['to_account_number'])->first();
-        
-        // Vérifier que le compte destinataire existe
+
         if (!$toBankAccount) {
             return response()->json(['message' => 'Compte bancaire destinataire introuvable.'], 404);
         }
-        // Vérifier que le montant est valide
+
         if ($data['amount'] <= 0) {
             return response()->json(['message' => 'Le montant doit être supérieur à zéro.'], 400);
         }
-        
-        $status = $this->transactionService->transferFunds($fromBankAccount, $toBankAccount, $fromBankAccountNumber, $toBankAccountNumber, $data['amount']);
-        
-        return response()->json(['status' => $status]);
+        return $this->transactionService->transferFunds($fromBankAccount, $toBankAccount, $data['amount']);
     }
 
     public function getUserTransactions(Request $request)
     {
-        $token = $request->bearerToken();
-        $tokenData = PersonalAccessToken::findToken($token);
-        if ($tokenData) 
-        {
-            $user = $tokenData->tokenable;  // Récupère l'utilisateur lié au token
-            $accountNumber= $user->bankAccount()->pluck('account_number');
-            return $this->transactionService->getUserTransactions($accountNumber);
-        }
-        return response()->json(['error' => 'Token not valid'], 401);
+        $accountNumber= $request->user()->bankAccount()->pluck('account_number');
+        return $this->transactionService->getUserTransactions($accountNumber);
     }
 
-    
+    public function getAccountTranscript(Request $request)
+    {
+        $accountNumber= $request->user()->bankAccount()->pluck('account_number');
+        return $this->transactionService->getAccountTranscript($accountNumber);
+    }
+
     public function getAllTransactions()
     {
         $transaction= $this->transactionService->getAllTransactions();
-    
         return TransactionResource::collection($transaction);
     }
 }

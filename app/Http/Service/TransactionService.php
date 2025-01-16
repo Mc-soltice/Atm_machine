@@ -3,6 +3,8 @@ namespace App\Http\Service;
 
 use App\Http\Repositories\TransactionRepository;
 use App\Models\Transaction;
+use App\Http\Resources\TransactionResource;
+use App\Http\Resources\TransferResource;
 
 class TransactionService
 {
@@ -37,12 +39,13 @@ class TransactionService
         return $this->transactionRepository->create($transactionData);
     }
 
-
-    public function transferFunds($fromBankAccount,$toBankAccount,$fromBankAccountNumber, $toBankAccountNumber, $amount)
+    public function transferFunds($fromBankAccount,$toBankAccount, $amount)
     {
         if ($fromBankAccount->balance < $amount) {
-            return response('Insufficient funds for transfer.');
-        }
+                return response()->json('Insufficient funds for transfer.');
+            }
+        $fromBankAccountNumber = $fromBankAccount->account_number;
+        $toBankAccountNumber = $toBankAccount->account_number;
 
         $this->transactionRepository->createTransferTransaction($fromBankAccountNumber, $toBankAccountNumber, $amount);
         
@@ -53,13 +56,15 @@ class TransactionService
         $toBankAccount->balance += $amount;
         $toBankAccount->save();
 
-    return (object) [
+        $tranfer=[
         'from_account_number' => $fromBankAccountNumber,
         'from_account_balance' => $fromBankAccount->balance,
-        'to_accountNumber' => $toBankAccountNumber,
-        'to_account_balance' => $toBankAccount->balance,
-        'amount' => $amount,
-    ];
+        'to_account_number' => $toBankAccountNumber,
+        'amount' => $amount
+        ];
+        return new TransferResource($tranfer);
+
+    
     }
 
     public function getUserTransactions($accountNumber)
@@ -69,6 +74,24 @@ class TransactionService
                                ->orderBy('created_at', 'desc')
                                ->get();
         return $transactions;
+    }
+    
+    public function getAccountTranscript($accountNumber)
+    {
+        // Récupérer les deux dernières transactions
+        $latestTransactions = Transaction::where('account_number', $accountNumber)
+        ->orderBy('created_at', 'desc')
+        ->take(2)
+        ->get();
+
+        // Calculer le solde total
+        $balance = Transaction::where('account_number', $accountNumber)
+        ->sum('amount');
+
+        return response()->json([
+        'balance' => $balance,
+        'latest_transactions' => TransactionResource::collection($latestTransactions),
+        ]);
     }
 
     public function getAllTransactions()
